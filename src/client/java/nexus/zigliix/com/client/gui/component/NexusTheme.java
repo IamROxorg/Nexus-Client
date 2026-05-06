@@ -13,61 +13,61 @@ public final class NexusTheme {
 
     public static int background() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xFF070809;
-            case MIDNIGHT -> 0xFF090B0E;
-            default -> 0xFF080A0D;
+            case OBSIDIAN -> 0xFF05070A;
+            case MIDNIGHT -> 0xFF060A0E;
+            default -> 0xFF060A0D;
         };
     }
 
     public static int backgroundAlt() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xFF101113;
-            case MIDNIGHT -> 0xFF121419;
-            default -> 0xFF111418;
+            case OBSIDIAN -> 0xD70B1117;
+            case MIDNIGHT -> 0xD70D151D;
+            default -> 0xD70D141A;
         };
     }
 
     public static int panel() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xF017191C;
-            case MIDNIGHT -> 0xF0191D24;
-            default -> 0xF0181B21;
+            case OBSIDIAN -> 0x66141C24;
+            case MIDNIGHT -> 0x6618232D;
+            default -> 0x6619232D;
         };
     }
 
     public static int panelAlt() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xF01E2125;
-            case MIDNIGHT -> 0xF0202530;
-            default -> 0xF01F232B;
+            case OBSIDIAN -> 0x7A1B2530;
+            case MIDNIGHT -> 0x7A202D38;
+            default -> 0x7A202A34;
         };
     }
 
     public static int panelElevated() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xF025292E;
-            case MIDNIGHT -> 0xF0262D38;
-            default -> 0xF0252A33;
+            case OBSIDIAN -> 0x8425303A;
+            case MIDNIGHT -> 0x842B3844;
+            default -> 0x842A3540;
         };
     }
 
     public static int panelSoft() {
-        return NexusRenderer.lerpColor(panelAlt(), withAlpha(accent(), 255), 0.12f);
+        return NexusRenderer.lerpColor(panelAlt(), withAlpha(accent(), 255), 0.08f);
     }
 
     public static int panelHeader() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xF01C1F23;
-            case MIDNIGHT -> 0xF01D222B;
-            default -> 0xF01C2027;
+            case OBSIDIAN -> 0x6F18212A;
+            case MIDNIGHT -> 0x6F1C2934;
+            default -> 0x6F1C2630;
         };
     }
 
     public static int panelFloat() {
         return switch (NexusUiState.getThemeVariant()) {
-            case OBSIDIAN -> 0xE615171A;
-            case MIDNIGHT -> 0xE6171A20;
-            default -> 0xE6161920;
+            case OBSIDIAN -> 0x58141C24;
+            case MIDNIGHT -> 0x5818232D;
+            default -> 0x5819232D;
         };
     }
 
@@ -84,7 +84,7 @@ public final class NexusTheme {
     }
 
     public static int accentSoft() {
-        return NexusRenderer.lerpColor(accent(), text(), 0.58f);
+        return NexusRenderer.lerpColor(accent(), text(), 0.70f);
     }
 
     public static int accentDark() {
@@ -108,15 +108,15 @@ public final class NexusTheme {
     }
 
     public static int textMuted() {
-        return 0xFFA2AFBF;
+        return 0xFFD4E0EA;
     }
 
     public static int textDim() {
-        return 0xFF7F8C9E;
+        return 0xFF9FAFBD;
     }
 
     public static int separator() {
-        return 0x66545A64;
+        return 0x42FFFFFF;
     }
 
     public static int shadow() {

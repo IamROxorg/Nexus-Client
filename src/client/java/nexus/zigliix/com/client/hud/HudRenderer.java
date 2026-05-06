@@ -37,6 +37,14 @@ public final class HudRenderer {
     };
     private static final DateTimeFormatter CLOCK_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
     private static final DateTimeFormatter CLOCK_FORMAT_12H = DateTimeFormatter.ofPattern("hh:mm:ss a");
+    private static final int GLASS_FILL = 0x4C18222C;
+    private static final int GLASS_FILL_STRONG = 0x661C2833;
+    private static final int GLASS_BORDER = 0x42FFFFFF;
+    private static final int GLASS_BORDER_SOFT = 0x26FFFFFF;
+    private static final int GLASS_ACTIVE = 0x86EAFBFF;
+    private static final int GLASS_ACTIVE_SOFT = 0x38EAFBFF;
+    private static final int GLASS_TEXT = 0xFFF2FBFF;
+    private static final int GLASS_DIM = 0xCCAFC0CE;
 
     private HudRenderer() {}
 
@@ -47,10 +55,10 @@ public final class HudRenderer {
         Font font = client.font;
         for (HudBounds bounds : getActiveBounds(screenWidth, screenHeight)) {
             switch (bounds.id()) {
-                case "coordinates" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), NexusTheme.text());
+                case "coordinates" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), GLASS_TEXT);
                 case "fps" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), getFpsColor(client.getFps()));
-                case "cps" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), NexusTheme.text());
-                case "clock" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), NexusTheme.accentSoft());
+                case "cps" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), GLASS_TEXT);
+                case "clock" -> drawPill(g, font, bounds.x(), bounds.y(), bounds.width(), bounds.text(), GLASS_TEXT);
                 case "effects" -> renderPotionEffects(g, client, bounds.x(), bounds.y(), bounds.width());
                 case "armor" -> renderArmor(g, client, bounds.x(), bounds.y());
                 case "keystrokes" -> renderKeystrokes(g, client, bounds.x(), bounds.y());
@@ -93,12 +101,11 @@ public final class HudRenderer {
         };
         y = avoidBadgeOverlap(x, y, width, height, screenWidth, screenHeight, badge.getPosition());
 
-        NexusRenderer.drawDropShadow(g, x, y, width, height, 4);
-        NexusRenderer.fillRoundRect(g, x, y, width, height, 6, NexusTheme.panelElevated());
-        NexusRenderer.drawOutline(g, x, y, width, height, NexusTheme.withAlpha(NexusTheme.accent(), 130));
-        g.fill(x + 5, y + 5, x + 8, y + 13, NexusTheme.accent());
-        g.text(font, label, x + 13, y + 5, NexusTheme.text(), true);
-        g.text(font, trim(font, user, width - font.width(label) - 24), x + 18 + font.width(label), y + 5, NexusTheme.accentSoft(), false);
+        NexusRenderer.fillRoundRect(g, x, y, width, height, 7, GLASS_BORDER);
+        NexusRenderer.fillRoundRect(g, x + 1, y + 1, width - 2, height - 2, 6, GLASS_FILL);
+        g.fill(x + 6, y + 5, x + 8, y + 13, GLASS_ACTIVE);
+        g.text(font, label, x + 13, y + 5, GLASS_TEXT, false);
+        g.text(font, trim(font, user, width - font.width(label) - 24), x + 18 + font.width(label), y + 5, GLASS_DIM, false);
     }
 
     private static int avoidBadgeOverlap(int x, int y, int width, int height, int screenWidth, int screenHeight, String position) {
@@ -219,10 +226,9 @@ public final class HudRenderer {
         }
         for (HudBounds bounds : getActiveBounds(screenWidth, screenHeight)) {
             boolean hovered = mouseX >= bounds.x() && mouseX <= bounds.x() + bounds.width() && mouseY >= bounds.y() && mouseY <= bounds.y() + bounds.height();
-            NexusRenderer.drawDropShadow(g, bounds.x(), bounds.y(), bounds.width(), bounds.height(), 5);
-            NexusRenderer.fillRoundRect(g, bounds.x(), bounds.y(), bounds.width(), bounds.height(), 8, NexusTheme.withAlpha(hovered ? NexusTheme.panelSoft() : NexusTheme.panelFloat(), hovered ? 228 : 214));
-            NexusRenderer.drawOutline(g, bounds.x(), bounds.y(), bounds.width(), bounds.height(), NexusTheme.withAlpha(hovered ? NexusTheme.accent() : NexusTheme.separator(), hovered ? 160 : 120));
-            g.text(client.font, bounds.id().toUpperCase(), bounds.x() + 6, bounds.y() + 5, hovered ? NexusTheme.text() : NexusTheme.textMuted(), false);
+            NexusRenderer.fillRoundRect(g, bounds.x(), bounds.y(), bounds.width(), bounds.height(), 8, hovered ? GLASS_ACTIVE_SOFT : GLASS_BORDER_SOFT);
+            NexusRenderer.fillRoundRect(g, bounds.x() + 1, bounds.y() + 1, bounds.width() - 2, bounds.height() - 2, 7, hovered ? GLASS_FILL_STRONG : GLASS_FILL);
+            g.text(client.font, bounds.id().toUpperCase(), bounds.x() + 6, bounds.y() + 5, hovered ? GLASS_TEXT : GLASS_DIM, false);
         }
     }
 
@@ -289,7 +295,7 @@ public final class HudRenderer {
         Font font = client.font;
         int rowY = y;
         for (String text : potionEffectLines(client)) {
-            drawPill(g, font, x, rowY, width, text, NexusTheme.text());
+            drawPill(g, font, x, rowY, width, text, GLASS_TEXT);
             rowY += 24;
         }
     }
@@ -326,10 +332,9 @@ public final class HudRenderer {
     }
 
     private static void drawPill(GuiGraphicsExtractor g, Font font, int x, int y, int width, String text, int valueColor) {
-        NexusRenderer.drawDropShadow(g, x, y, width, 18, 4);
-        NexusRenderer.fillRoundRect(g, x, y, width, 18, 8, NexusTheme.panelElevated());
-        NexusRenderer.drawOutline(g, x, y, width, 18, NexusTheme.withAlpha(NexusTheme.separator(), 120));
-        g.fill(x + 1, y + 1, x + width - 1, y + 3, NexusTheme.withAlpha(NexusTheme.accent(), 90));
+        NexusRenderer.fillRoundRect(g, x, y, width, 18, 8, GLASS_BORDER);
+        NexusRenderer.fillRoundRect(g, x + 1, y + 1, Math.max(1, width - 2), 16, 7, GLASS_FILL);
+        g.fill(x + 3, y + 1, x + width - 3, y + 2, 0x26FFFFFF);
         g.text(font, trim(font, text, width - 16), x + 8, y + 5, valueColor, false);
     }
 
@@ -343,7 +348,8 @@ public final class HudRenderer {
             int remaining = stack.getMaxDamage() - stack.getDamageValue();
             int percent = Math.round(remaining * 100.0f / stack.getMaxDamage());
             int color = percent >= 60 ? NexusTheme.success() : percent >= 30 ? NexusTheme.warning() : NexusTheme.danger();
-            NexusRenderer.fillRoundRect(g, x, rowY, 90, 18, 8, NexusTheme.panelElevated());
+            NexusRenderer.fillRoundRect(g, x, rowY, 90, 18, 8, GLASS_BORDER);
+            NexusRenderer.fillRoundRect(g, x + 1, rowY + 1, 88, 16, 7, GLASS_FILL);
             g.item(stack, x + 2, rowY + 1);
             g.itemDecorations(client.font, stack, x + 2, rowY + 1);
             g.text(client.font, percent + "%", x + 24, rowY + 5, color, false);
@@ -361,14 +367,14 @@ public final class HudRenderer {
     }
 
     private static void drawKey(GuiGraphicsExtractor g, Minecraft client, int x, int y, int width, int height, String label, boolean pressed) {
-        NexusRenderer.fillRoundRect(g, x, y, width, height, 6, pressed ? NexusTheme.accent() : NexusTheme.panelElevated());
-        NexusRenderer.drawOutline(g, x, y, width, height, NexusTheme.withAlpha(pressed ? NexusTheme.accentSoft() : NexusTheme.separator(), 120));
-        int color = pressed ? NexusTheme.background() : NexusTheme.textMuted();
+        NexusRenderer.fillRoundRect(g, x, y, width, height, 6, pressed ? GLASS_ACTIVE : GLASS_BORDER_SOFT);
+        NexusRenderer.fillRoundRect(g, x + 1, y + 1, Math.max(1, width - 2), Math.max(1, height - 2), 5, pressed ? GLASS_ACTIVE_SOFT : GLASS_FILL);
+        int color = pressed ? 0xFF071014 : GLASS_DIM;
         g.text(client.font, label, x + (width - client.font.width(label)) / 2, y + 5, color, false);
     }
 
     private static int getFpsColor(int fps) {
-        return fps >= 144 ? NexusTheme.success() : fps >= 60 ? NexusTheme.warning() : NexusTheme.danger();
+        return GLASS_TEXT;
     }
 
     private static String formatDuration(int ticks) {

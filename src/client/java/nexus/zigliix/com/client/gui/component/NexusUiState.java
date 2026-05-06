@@ -14,13 +14,13 @@ public final class NexusUiState {
     private static final EnumMap<Category, Point> PANEL_POSITIONS = new EnumMap<>(Category.class);
     private static final Map<String, Point> HUD_POSITIONS = new HashMap<>();
     private static ThemeVariant themeVariant = ThemeVariant.GLACIAL;
-    private static AccentPreset accentPreset = AccentPreset.ICE_BLUE;
+    private static AccentPreset accentPreset = AccentPreset.FROST;
 
     private NexusUiState() {}
 
     public static void resetDefaults() {
         themeVariant = ThemeVariant.GLACIAL;
-        accentPreset = AccentPreset.ICE_BLUE;
+        accentPreset = AccentPreset.FROST;
         PANEL_POSITIONS.clear();
         HUD_POSITIONS.clear();
     }
@@ -95,7 +95,7 @@ public final class NexusUiState {
 
     public static void resetUiPreferences() {
         themeVariant = ThemeVariant.GLACIAL;
-        accentPreset = AccentPreset.ICE_BLUE;
+        accentPreset = AccentPreset.FROST;
         PANEL_POSITIONS.clear();
         HUD_POSITIONS.clear();
         NexusConfigManager.save();
@@ -132,7 +132,7 @@ public final class NexusUiState {
         }
 
         themeVariant = ThemeVariant.fromId(readString(object, "theme"), ThemeVariant.GLACIAL);
-        accentPreset = AccentPreset.fromId(readString(object, "accent"), AccentPreset.ICE_BLUE);
+        accentPreset = AccentPreset.fromId(readString(object, "accent"), AccentPreset.FROST);
 
         PANEL_POSITIONS.clear();
         JsonObject panels = readObject(object, "panels");
@@ -205,9 +205,9 @@ public final class NexusUiState {
     }
 
     public enum AccentPreset {
-        ICE_BLUE("ice_blue", 0xFF00E0CF),
-        SOFT_VIOLET("soft_violet", 0xFF8E89FF),
-        ARCTIC_MINT("arctic_mint", 0xFF69D7C2);
+        FROST("frost", 0xFFEAFBFF),
+        AQUA("aqua", 0xFF8DECF2),
+        MINT("mint", 0xFFA9F2D0);
 
         private final String id;
         private final int color;
@@ -230,6 +230,9 @@ public final class NexusUiState {
                 return fallback;
             }
             String normalized = id.toLowerCase(Locale.ROOT);
+            if (normalized.equals("soft_violet") || normalized.equals("ice_blue") || normalized.equals("arctic_mint")) {
+                return fallback;
+            }
             for (AccentPreset preset : values()) {
                 if (preset.id.equals(normalized)) {
                     return preset;
