@@ -56,6 +56,16 @@ public class ClickGuiScreen extends Screen {
     private static final int ICON_NAV = 18;
     private static final int ICON_CARD = 18;
     private static final int ICON_ACTION = 16;
+    private static final int BG_OVERLAY = 0xC8030507;
+    private static final int SHELL_FILL = 0xF005070A;
+    private static final int SIDEBAR_FILL = 0xF0020406;
+    private static final int PANEL_FILL = 0xE7080B0F;
+    private static final int PANEL_HOVER = 0xEA10151A;
+    private static final int ROW_FILL = 0x78101519;
+    private static final int ROW_HOVER = 0xA8141A20;
+    private static final int BORDER_FAINT = 0x30252D35;
+    private static final int BORDER_SOFT = 0x55313A43;
+    private static final int BORDER_ACTIVE = 0x88445158;
     private static final Identifier ASSET_MARK = guiTexture("nexus_mark.png");
     private static final Identifier ASSET_HOME = guiTexture("home.png");
     private static final Identifier ASSET_HOME_ACTIVE = guiTexture("home_accent.png");
@@ -128,7 +138,7 @@ public class ClickGuiScreen extends Screen {
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
         g.blurBeforeThisStratum();
-        g.fill(0, 0, width, height, 0x9A03070A);
+        g.fill(0, 0, width, height, BG_OVERLAY);
         drawOutsideBrand(g);
     }
 
@@ -161,23 +171,21 @@ public class ClickGuiScreen extends Screen {
     private void drawOutsideBrand(GuiGraphicsExtractor g) {
         int x = 24;
         int y = 21;
-        drawAsset(g, ASSET_MARK, x, y, 28, 28, 64);
-        g.text(font, "Nexus", x + 40, y + 8, NexusTheme.text(), true);
-        g.text(font, "Client", x + 88, y + 8, NexusTheme.accent(), false);
+        g.text(font, "Nexus Client", x, y + 9, NexusTheme.withAlpha(NexusTheme.textMuted(), 170), false);
     }
 
     private void drawShell(GuiGraphicsExtractor g, int y) {
-        NexusRenderer.drawDropShadow(g, winX, y, winW, winH, 7);
-        drawSurface(g, winX, y, winW, winH, RADIUS, 0xEE071012, NexusTheme.withAlpha(NexusTheme.accent(), 55));
-        g.fill(winX + SIDEBAR_W, y + 1, winX + SIDEBAR_W + 1, y + winH - 1, 0x5039474C);
-        g.fill(winX + SIDEBAR_W + 1, y + HEADER_H, winX + winW - 1, y + HEADER_H + 1, 0x4039474C);
+        NexusRenderer.drawDropShadow(g, winX, y, winW, winH, 4);
+        drawSurface(g, winX, y, winW, winH, RADIUS, SHELL_FILL, BORDER_SOFT);
+        g.fill(winX + SIDEBAR_W, y + 1, winX + SIDEBAR_W + 1, y + winH - 1, BORDER_FAINT);
+        g.fill(winX + SIDEBAR_W + 1, y + HEADER_H, winX + winW - 1, y + HEADER_H + 1, BORDER_FAINT);
     }
 
     private void drawSidebar(GuiGraphicsExtractor g, int mouseX, int mouseY, int y) {
-        NexusRenderer.fillRoundRect(g, winX + 1, y + 1, SIDEBAR_W - 1, winH - 2, RADIUS, 0xD8051012);
-        drawAsset(g, ASSET_MARK, winX + (SIDEBAR_W - 34) / 2, y + 22, 34, 34, 64);
+        NexusRenderer.fillRoundRect(g, winX + 1, y + 1, SIDEBAR_W - 1, winH - 2, RADIUS, SIDEBAR_FILL);
+        drawAsset(g, ASSET_MARK, winX + (SIDEBAR_W - 28) / 2, y + 22, 28, 28, 64);
 
-        int navY = y + 96;
+        int navY = y + 82;
         for (Page page : Page.values()) {
             drawNavRow(g, mouseX, mouseY, winX + 8, navY, page, page == selectedPage);
             navY += NAV_ROW_H + 8;
@@ -191,12 +199,12 @@ public class ClickGuiScreen extends Screen {
         float hover = UiAnimation.toggle(navHover.getOrDefault(page, 0.0f), hovered, 0.14f);
         navHover.put(page, hover);
 
-        int bg = selected ? NexusTheme.withAlpha(NexusTheme.accent(), 52) : NexusTheme.withAlpha(0xFFFFFFFF, Math.round(hover * 13.0f));
+        int bg = selected ? 0xB811171D : NexusTheme.withAlpha(PANEL_HOVER, Math.round(hover * 180.0f));
         if (selected || hover > 0.01f) {
             NexusRenderer.fillRoundRect(g, x, y, SIDEBAR_W - 16, NAV_ROW_H, 6, bg);
         }
         if (selected) {
-            g.fill(x + SIDEBAR_W - 21, y + 6, x + SIDEBAR_W - 18, y + NAV_ROW_H - 6, NexusTheme.accent());
+            g.fill(x + SIDEBAR_W - 21, y + 8, x + SIDEBAR_W - 19, y + NAV_ROW_H - 8, NexusTheme.withAlpha(NexusTheme.accent(), 180));
         }
 
         drawPageIcon(g, page, x + 15, y + (NAV_ROW_H - ICON_NAV) / 2, selected);
@@ -204,46 +212,39 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void drawUserBadge(GuiGraphicsExtractor g, int y) {
-        int x = winX + 10;
-        int badgeY = y + winH - 62;
-        int w = SIDEBAR_W - 20;
-        drawSurface(g, x, badgeY, w, 44, 6, 0x16FFFFFF, 0x4539474C);
-        drawPlayerHead(g, x + 8, badgeY + 10, 22);
-        g.text(font, trim(currentPlayerName(), w - 42), x + 36, badgeY + 11, NexusTheme.text(), false);
-        g.text(font, "Premium", x + 36, badgeY + 24, NexusTheme.accent(), false);
+        int x = winX + 12;
+        int badgeY = y + winH - 56;
+        int w = SIDEBAR_W - 24;
+        drawSurface(g, x, badgeY, w, 40, 6, PANEL_FILL, BORDER_SOFT);
+        drawPlayerHead(g, x + 8, badgeY + 9, 20);
+        g.text(font, trim(currentPlayerName(), w - 42), x + 34, badgeY + 10, NexusTheme.text(), false);
+        g.text(font, "Player", x + 34, badgeY + 23, NexusTheme.textDim(), false);
     }
 
     private void drawHeader(GuiGraphicsExtractor g, int mouseX, int mouseY, int y) {
         int x = winX + SIDEBAR_W;
         int w = winW - SIDEBAR_W;
-        int pulseX = x + 28;
-        int pulseY = y + 29;
-        drawIcon(g, ASSET_PULSE, pulseX, pulseY, 20);
-
-        int configW = 120;
-        int configX = x + w - PAD - configW - 178;
-        int titleX = pulseX + 30;
-        g.text(font, headerTitle(), titleX, y + 24, NexusTheme.text(), true);
-        g.text(font, trim(headerSubtitle(), Math.max(120, configX - titleX - 12)), titleX, y + 39, NexusTheme.textDim(), false);
-        drawHeaderButton(g, configX, y + 22, configW, "Open Config", mouseX, mouseY);
-        drawStats(g, x + w - PAD - 154, y + 15);
+        int configW = 78;
+        int configX = x + w - PAD - configW;
+        int titleX = x + 26;
+        g.text(font, headerTitle(), titleX, y + 25, NexusTheme.text(), false);
+        g.text(font, trim(headerSubtitle(), Math.max(120, configX - titleX - 16)), titleX, y + 40, NexusTheme.textDim(), false);
+        drawHeaderButton(g, configX, y + 24, configW, "Config", mouseX, mouseY);
     }
 
     private void drawHeaderButton(GuiGraphicsExtractor g, int x, int y, int w, String text, int mouseX, int mouseY) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, 28);
-        drawSurface(g, x, y, w, 28, 7, hovered ? 0x1FFFFFFF : 0x13FFFFFF, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 95) : 0x5039474C);
-        drawIcon(g, ASSET_FOLDER, x + 12, y + 6, ICON_ACTION);
-        g.text(font, text, x + 34, y + 10, NexusTheme.text(), false);
-        g.text(font, ">", x + w - 16, y + 10, NexusTheme.textMuted(), false);
+        drawSurface(g, x, y, w, 24, 6, hovered ? ROW_HOVER : ROW_FILL, hovered ? BORDER_ACTIVE : BORDER_SOFT);
+        g.centeredText(font, text, x + w / 2, y + 8, hovered ? NexusTheme.text() : NexusTheme.textMuted());
     }
 
     private void drawStats(GuiGraphicsExtractor g, int x, int y) {
-        drawSurface(g, x, y, 154, 42, 8, 0x1AFFFFFF, 0x5039474C);
+        drawSurface(g, x, y, 154, 42, 8, PANEL_FILL, BORDER_SOFT);
         g.text(font, "FPS", x + 12, y + 9, NexusTheme.textDim(), false);
         g.text(font, Integer.toString(Minecraft.getInstance().getFps()), x + 12, y + 22, NexusTheme.text(), true);
         g.text(font, "RAM", x + 68, y + 9, NexusTheme.textDim(), false);
         g.text(font, usedMemoryText(), x + 68, y + 22, NexusTheme.text(), false);
-        g.fill(x + 68, y + 34, x + 138, y + 36, 0x24FFFFFF);
+        g.fill(x + 68, y + 34, x + 138, y + 36, BORDER_FAINT);
         g.fill(x + 68, y + 34, x + 68 + Math.round(70 * memoryProgress()), y + 36, NexusTheme.accent());
     }
 
@@ -295,7 +296,7 @@ public class ClickGuiScreen extends Screen {
         int bottomY = y + appearanceH + CARD_GAP;
         int bottomH = h - appearanceH - CARD_GAP;
 
-        drawSurface(g, x, y, w, appearanceH, 8, 0x14FFFFFF, 0x5039474C);
+        drawSurface(g, x, y, w, appearanceH, 8, PANEL_FILL, BORDER_SOFT);
         drawIcon(g, ASSET_SETTINGS_ACTIVE, x + 14, y + 12, ICON_CARD);
         g.text(font, "Appearance", x + 40, y + 15, NexusTheme.text(), true);
         g.text(font, trim("Choose the client skin and accent used by every Nexus panel.", w - 30), x + 14, y + 35, NexusTheme.textDim(), false);
@@ -305,7 +306,7 @@ public class ClickGuiScreen extends Screen {
         g.text(font, "Accent", x + 14, y + 108, NexusTheme.textMuted(), false);
         drawAccentPresetRow(g, mouseX, mouseY, x + 12, y + 121, w - 24);
 
-        drawSurface(g, x, bottomY, w, bottomH, 8, 0x14FFFFFF, 0x5039474C);
+        drawSurface(g, x, bottomY, w, bottomH, 8, PANEL_FILL, BORDER_SOFT);
         drawIcon(g, ASSET_HUD_ACTIVE, x + 14, bottomY + 12, ICON_CARD);
         g.text(font, "Layout", x + 40, bottomY + 15, NexusTheme.text(), true);
         g.text(font, trim("Move misplaced HUD widgets or reset the saved UI layout.", w - 30), x + 14, bottomY + 35, NexusTheme.textDim(), false);
@@ -343,8 +344,8 @@ public class ClickGuiScreen extends Screen {
 
     private void drawPresetChip(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int y, int w, String label, boolean selected, int swatchColor) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, 28);
-        int fill = selected ? NexusTheme.withAlpha(NexusTheme.accent(), 46) : hovered ? 0x18FFFFFF : 0x0DFFFFFF;
-        int border = selected ? NexusTheme.withAlpha(NexusTheme.accent(), 150) : hovered ? 0x70FFFFFF : 0x4039474C;
+        int fill = selected ? NexusTheme.withAlpha(NexusTheme.accent(), 34) : hovered ? ROW_HOVER : ROW_FILL;
+        int border = selected ? NexusTheme.withAlpha(NexusTheme.accent(), 120) : hovered ? BORDER_ACTIVE : BORDER_SOFT;
         drawSurface(g, x, y, w, 28, 6, fill, border);
         int textX = x + 10;
         int textW = w - 20;
@@ -358,7 +359,7 @@ public class ClickGuiScreen extends Screen {
 
     private void drawSettingsAction(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int y, int w, int h, Identifier icon, String title, String description) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, h);
-        drawSurface(g, x, y, w, h, 7, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 34) : 0x0DFFFFFF, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 120) : 0x4039474C);
+        drawSurface(g, x, y, w, h, 7, hovered ? ROW_HOVER : ROW_FILL, hovered ? BORDER_ACTIVE : BORDER_SOFT);
         drawIcon(g, icon, x + 10, y + Math.max(5, (h - ICON_ACTION) / 2), ICON_ACTION);
         g.text(font, trim(title, w - 34), x + 32, y + Math.max(5, h / 2 - 10), NexusTheme.text(), false);
         if (h >= 34) {
@@ -378,10 +379,10 @@ public class ClickGuiScreen extends Screen {
         List<Module> modules,
         String buttonText
     ) {
-        drawSurface(g, x, y, w, h, 8, 0x14FFFFFF, page == selectedPage ? NexusTheme.withAlpha(NexusTheme.accent(), 80) : 0x5039474C);
+        drawSurface(g, x, y, w, h, 8, PANEL_FILL, page == selectedPage ? NexusTheme.withAlpha(NexusTheme.accent(), 95) : BORDER_SOFT);
         drawIcon(g, activeTextureForPage(page), x + 14, y + 12, ICON_CARD);
         g.text(font, page.displayName, x + 40, y + 15, NexusTheme.text(), true);
-        g.fill(x + 10, y + 42, x + w - 10, y + 43, 0x4039474C);
+        g.fill(x + 10, y + 42, x + w - 10, y + 43, BORDER_FAINT);
 
         int rowY = y + 54;
         int rowLimit = y + h - 40;
@@ -403,24 +404,24 @@ public class ClickGuiScreen extends Screen {
     private void drawDashboardModuleRow(GuiGraphicsExtractor g, int x, int y, int w, Module module, int mouseX, int mouseY) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, 24);
         if (hovered) {
-            NexusRenderer.fillRoundRect(g, x - 4, y - 3, w + 8, 28, 5, 0x0DFFFFFF);
+            NexusRenderer.fillRoundRect(g, x - 4, y - 3, w + 8, 28, 5, ROW_FILL);
             tooltip = module.getDescription();
         }
         g.text(font, trim(module.getName(), w - 48), x, y + 1, module.isEnabled() ? NexusTheme.text() : NexusTheme.textMuted(), false);
         g.text(font, trim(module.getDescription(), w - 48), x, y + 12, NexusTheme.textDim(), false);
         drawToggle(g, x + w - 28, y + 5, module.isEnabled());
-        g.fill(x, y + 25, x + w, y + 26, 0x2639474C);
+        g.fill(x, y + 25, x + w, y + 26, BORDER_FAINT);
     }
 
     private void drawCardButton(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int y, int w, String text) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, 24);
-        drawSurface(g, x, y, w, 24, 6, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 34) : 0x0DFFFFFF, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 110) : 0x4039474C);
+        drawSurface(g, x, y, w, 24, 6, hovered ? ROW_HOVER : ROW_FILL, hovered ? BORDER_ACTIVE : BORDER_SOFT);
         g.centeredText(font, trim(text, w - 28), x + w / 2, y + 8, hovered ? NexusTheme.text() : NexusTheme.textMuted());
         g.text(font, ">", x + w - 18, y + 8, hovered ? NexusTheme.accent() : NexusTheme.textDim(), false);
     }
 
     private void drawQuickActionsCard(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int y, int w, int h) {
-        drawSurface(g, x, y, w, h, 8, 0x14FFFFFF, 0x5039474C);
+        drawSurface(g, x, y, w, h, 8, PANEL_FILL, BORDER_SOFT);
         drawIcon(g, ASSET_BOLT, x + 14, y + 12, ICON_CARD);
         g.text(font, "Quick Actions", x + 40, y + 15, NexusTheme.text(), true);
 
@@ -434,7 +435,7 @@ public class ClickGuiScreen extends Screen {
 
     private void drawDashboardAction(GuiGraphicsExtractor g, int x, int y, int w, int h, Identifier icon, String title, String description, int mouseX, int mouseY) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, h);
-        drawSurface(g, x, y, w, h, 7, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 34) : 0x0DFFFFFF, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 120) : 0x4039474C);
+        drawSurface(g, x, y, w, h, 7, hovered ? ROW_HOVER : ROW_FILL, hovered ? BORDER_ACTIVE : BORDER_SOFT);
         int iconY = y + Math.max(4, (h - ICON_ACTION) / 2);
         drawIcon(g, icon, x + 12, iconY, ICON_ACTION);
         g.text(font, trim(title, w - 58), x + 36, y + Math.max(5, h / 2 - 10), NexusTheme.text(), false);
@@ -445,7 +446,7 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void drawSearch(GuiGraphicsExtractor g, int x, int y, int w) {
-        drawSurface(g, x, y, w, 26, 7, searchFocused ? 0x20FFFFFF : 0x10FFFFFF, searchFocused ? NexusTheme.withAlpha(NexusTheme.accent(), 120) : 0x4039474C);
+        drawSurface(g, x, y, w, 26, 7, searchFocused ? ROW_HOVER : ROW_FILL, searchFocused ? NexusTheme.withAlpha(NexusTheme.accent(), 110) : BORDER_SOFT);
         String text = searchQuery.isBlank() ? "Search modules" : searchQuery;
         g.text(font, trim(text, w - 18), x + 9, y + 9, searchQuery.isBlank() ? NexusTheme.textDim() : NexusTheme.text(), false);
         if (searchFocused) {
@@ -455,10 +456,10 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void drawModulePanel(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int y, int w, int h) {
-        drawSurface(g, x, y, w, h, 8, 0x14FFFFFF, 0x5039474C);
+        drawSurface(g, x, y, w, h, 8, PANEL_FILL, BORDER_SOFT);
         drawIcon(g, activeTextureForPage(selectedPage), x + 14, y + 12, ICON_CARD);
         g.text(font, selectedPage.displayName, x + 40, y + 15, NexusTheme.text(), true);
-        g.fill(x + 10, y + 42, x + w - 10, y + 43, 0x4039474C);
+        g.fill(x + 10, y + 42, x + w - 10, y + 43, BORDER_FAINT);
 
         int listX = x + 10;
         int listY = y + 52;
@@ -486,7 +487,7 @@ public class ClickGuiScreen extends Screen {
         moduleAnim.put(module, anim);
 
         if (hovered || enabled || expanded) {
-            NexusRenderer.fillRoundRect(g, x, y, w, h, 5, enabled ? NexusTheme.withAlpha(NexusTheme.accent(), 26) : 0x0DFFFFFF);
+            NexusRenderer.fillRoundRect(g, x, y, w, h, 5, enabled ? NexusTheme.withAlpha(NexusTheme.accent(), 22) : ROW_FILL);
         }
         g.text(font, trim(module.getName(), w - 64), x + 8, y + 5, enabled ? NexusTheme.text() : NexusRenderer.lerpColor(NexusTheme.textMuted(), NexusTheme.text(), anim), false);
         g.text(font, trim(module.getDescription(), w - 64), x + 8, y + 16, NexusTheme.textDim(), false);
@@ -505,16 +506,16 @@ public class ClickGuiScreen extends Screen {
             settingY += settingH + 5;
         }
         String bind = module == bindingModule ? "Press key" : "Bind: " + module.getKeybindName();
-        drawSurface(g, x + 8, settingY, w - 16, 20, 4, module == bindingModule ? NexusTheme.withAlpha(NexusTheme.accent(), 48) : 0x0DFFFFFF, 0x4039474C);
+        drawSurface(g, x + 8, settingY, w - 16, 20, 4, module == bindingModule ? NexusTheme.withAlpha(NexusTheme.accent(), 40) : ROW_FILL, BORDER_SOFT);
         g.text(font, trim(bind, w - 30), x + 15, settingY + 6, module == bindingModule ? NexusTheme.accentSoft() : NexusTheme.textDim(), false);
     }
 
     private void drawQuickPanel(GuiGraphicsExtractor g, int mouseX, int mouseY, int x, int y, int w, int h) {
         int topH = moduleQuickTopHeight(h);
-        drawSurface(g, x, y, w, topH, 8, 0x14FFFFFF, 0x5039474C);
+        drawSurface(g, x, y, w, topH, 8, PANEL_FILL, BORDER_SOFT);
         drawIcon(g, ASSET_PERFORMANCE, x + 14, y + 12, ICON_CARD);
         g.text(font, "Performance", x + 40, y + 15, NexusTheme.text(), true);
-        g.fill(x + 10, y + 42, x + w - 10, y + 43, 0x4039474C);
+        g.fill(x + 10, y + 42, x + w - 10, y + 43, BORDER_FAINT);
 
         List<Module> enabledModules = ModuleManager.getEnabled();
         int rowY = y + 54;
@@ -530,7 +531,7 @@ public class ClickGuiScreen extends Screen {
 
         int bottomY = y + topH + CARD_GAP;
         int bottomH = h - topH - CARD_GAP;
-        drawSurface(g, x, bottomY, w, bottomH, 8, 0x14FFFFFF, 0x5039474C);
+        drawSurface(g, x, bottomY, w, bottomH, 8, PANEL_FILL, BORDER_SOFT);
         drawIcon(g, ASSET_BOLT, x + 14, bottomY + 12, ICON_CARD);
         g.text(font, "Quick Actions", x + 40, bottomY + 15, NexusTheme.text(), true);
 
@@ -546,12 +547,12 @@ public class ClickGuiScreen extends Screen {
         g.text(font, trim(title, w - 48), x, y, enabled ? NexusTheme.text() : NexusTheme.textDim(), false);
         g.text(font, trim(description, w - 48), x, y + 11, NexusTheme.textDim(), false);
         drawToggle(g, x + w - 28, y + 4, enabled);
-        g.fill(x, y + 25, x + w, y + 26, 0x2A39474C);
+        g.fill(x, y + 25, x + w, y + 26, BORDER_FAINT);
     }
 
     private void drawLargeAction(GuiGraphicsExtractor g, int x, int y, int w, int h, Identifier icon, String title, String description, int mouseX, int mouseY) {
         boolean hovered = isHovered(mouseX, mouseY, x, y, w, h);
-        drawSurface(g, x, y, w, h, 7, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 34) : 0x0DFFFFFF, hovered ? NexusTheme.withAlpha(NexusTheme.accent(), 120) : 0x4039474C);
+        drawSurface(g, x, y, w, h, 7, hovered ? ROW_HOVER : ROW_FILL, hovered ? BORDER_ACTIVE : BORDER_SOFT);
         drawIcon(g, icon, x + 12, y + Math.max(5, (h - ICON_ACTION) / 2), ICON_ACTION);
         g.text(font, trim(title, w - 58), x + 36, y + Math.max(5, h / 2 - 10), NexusTheme.text(), false);
         if (h >= 30) {
@@ -562,14 +563,14 @@ public class ClickGuiScreen extends Screen {
 
     private int drawSetting(GuiGraphicsExtractor g, Setting<?> setting, int x, int y, int w, int mouseX, int mouseY) {
         if (setting instanceof BooleanSetting booleanSetting) {
-            drawSurface(g, x, y, w, 22, 4, 0x0DFFFFFF, 0x4039474C);
+            drawSurface(g, x, y, w, 22, 4, ROW_FILL, BORDER_SOFT);
             g.text(font, setting.getName(), x + 7, y + 8, NexusTheme.textMuted(), false);
             drawToggle(g, x + w - 28, y + 5, booleanSetting.getValue());
             setTooltipIfHovered(mouseX, mouseY, x, y, w, 22, setting.getDescription());
             return 22;
         }
         if (setting instanceof NumberSetting numberSetting) {
-            drawSurface(g, x, y, w, 34, 4, 0x0DFFFFFF, 0x4039474C);
+            drawSurface(g, x, y, w, 34, 4, ROW_FILL, BORDER_SOFT);
             g.text(font, setting.getName(), x + 7, y + 7, NexusTheme.textMuted(), false);
             String value = numberSetting.getDisplayValue();
             g.text(font, value, x + w - 8 - font.width(value), y + 7, NexusTheme.accentSoft(), false);
@@ -579,7 +580,7 @@ public class ClickGuiScreen extends Screen {
             double range = Math.max(0.0001, numberSetting.getMax() - numberSetting.getMin());
             double progress = (numberSetting.getValue() - numberSetting.getMin()) / range;
             int fillW = Math.max(4, (int) Math.round(trackW * progress));
-            NexusRenderer.fillRoundRect(g, trackX, trackY, trackW, 4, 2, 0x24FFFFFF);
+            NexusRenderer.fillRoundRect(g, trackX, trackY, trackW, 4, 2, BORDER_FAINT);
             NexusRenderer.fillRoundRect(g, trackX, trackY, fillW, 4, 2, NexusTheme.accent());
             NexusRenderer.fillRoundRect(g, trackX + fillW - 4, trackY - 2, 8, 8, 4, NexusTheme.text());
             setTooltipIfHovered(mouseX, mouseY, x, y, w, 34, setting.getDescription());
@@ -588,7 +589,7 @@ public class ClickGuiScreen extends Screen {
         if (setting instanceof ModeSetting modeSetting) {
             boolean open = openDropdowns.getOrDefault(modeSetting, false);
             int h = getSettingHeight(setting);
-            drawSurface(g, x, y, w, h, 4, 0x0DFFFFFF, 0x4039474C);
+            drawSurface(g, x, y, w, h, 4, ROW_FILL, BORDER_SOFT);
             g.text(font, setting.getName(), x + 7, y + 8, NexusTheme.textMuted(), false);
             String value = trim(modeSetting.getDisplayValue(), Math.max(30, w / 2));
             g.text(font, value, x + w - 20 - font.width(value), y + 8, NexusTheme.accentSoft(), false);
@@ -597,7 +598,7 @@ public class ClickGuiScreen extends Screen {
                 int optionY = y + 26;
                 for (String mode : modeSetting.getModes()) {
                     boolean selected = mode.equalsIgnoreCase(modeSetting.getValue());
-                    NexusRenderer.fillRoundRect(g, x + 6, optionY, w - 12, 16, 3, selected ? NexusTheme.withAlpha(NexusTheme.accent(), 44) : 0x0BFFFFFF);
+                    NexusRenderer.fillRoundRect(g, x + 6, optionY, w - 12, 16, 3, selected ? NexusTheme.withAlpha(NexusTheme.accent(), 34) : 0x66101519);
                     g.text(font, trim(mode, w - 24), x + 12, optionY + 5, selected ? NexusTheme.text() : NexusTheme.textMuted(), false);
                     optionY += 18;
                 }
@@ -609,7 +610,7 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void drawToggle(GuiGraphicsExtractor g, int x, int y, boolean enabled) {
-        NexusRenderer.fillRoundRect(g, x, y, 24, 12, 6, enabled ? NexusTheme.withAlpha(NexusTheme.accent(), 220) : 0x35FFFFFF);
+        NexusRenderer.fillRoundRect(g, x, y, 24, 12, 6, enabled ? NexusTheme.withAlpha(NexusTheme.accent(), 190) : 0x66313A43);
         int knobX = enabled ? x + 12 : x;
         NexusRenderer.fillRoundRect(g, knobX + 2, y + 2, 8, 8, 4, enabled ? NexusTheme.text() : NexusTheme.textDim());
     }
@@ -623,8 +624,8 @@ public class ClickGuiScreen extends Screen {
         double maxScroll = Math.max(1.0, contentH - h);
         int thumbY = y + (int) ((scrollOffset / maxScroll) * (h - thumbH));
         int barX = x + w - 3;
-        g.fill(barX, y, barX + 2, y + h, 0x14FFFFFF);
-        g.fill(barX, thumbY, barX + 2, thumbY + thumbH, NexusTheme.withAlpha(NexusTheme.accent(), 175));
+        g.fill(barX, y, barX + 2, y + h, BORDER_FAINT);
+        g.fill(barX, thumbY, barX + 2, thumbY + thumbH, NexusTheme.withAlpha(NexusTheme.accent(), 145));
     }
 
     private void drawTooltip(GuiGraphicsExtractor g, int mouseX, int mouseY) {
@@ -672,9 +673,9 @@ public class ClickGuiScreen extends Screen {
     private boolean handleHeaderClick(double mouseX, double mouseY, int y) {
         int x = winX + SIDEBAR_W;
         int w = winW - SIDEBAR_W;
-        int configW = 120;
-        int configX = x + w - PAD - configW - 178;
-        if (isHovered(mouseX, mouseY, configX, y + 22, configW, 28)) {
+        int configW = 78;
+        int configX = x + w - PAD - configW;
+        if (isHovered(mouseX, mouseY, configX, y + 24, configW, 24)) {
             openConfigFolder();
             return true;
         }
@@ -682,7 +683,7 @@ public class ClickGuiScreen extends Screen {
     }
 
     private boolean handleNavClick(double mouseX, double mouseY, int y) {
-        int navY = y + 96;
+        int navY = y + 82;
         for (Page page : Page.values()) {
             if (isHovered(mouseX, mouseY, winX + 8, navY, SIDEBAR_W - 16, NAV_ROW_H)) {
                 selectedPage = page;
@@ -1287,7 +1288,7 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void drawPlayerHead(GuiGraphicsExtractor g, int x, int y, int size) {
-        NexusRenderer.fillRoundRect(g, x - 1, y - 1, size + 2, size + 2, 4, 0x35FFFFFF);
+        NexusRenderer.fillRoundRect(g, x - 1, y - 1, size + 2, size + 2, 4, BORDER_SOFT);
         PlayerSkin skin = currentPlayerSkin();
         Identifier texture = skin.body().texturePath();
         g.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 8.0F, 8.0F, size, size, 8, 8, 64, 64);
