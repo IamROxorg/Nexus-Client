@@ -17,7 +17,7 @@ public class MainMenuScreen extends TitleScreen {
     private static final int BUTTON_WIDTH = 300;
     private static final int BUTTON_HEIGHT = 28;
     private static final int BUTTON_GAP = 8;
-    private static final int BUTTON_RADIUS = 7;
+    private static final int BUTTON_RADIUS = 0;
     private static final int ICON_SIZE = 28;
     private static final int ICON_GAP = 12;
     private static final int LOGO_SIZE = 66;
@@ -69,7 +69,7 @@ public class MainMenuScreen extends TitleScreen {
         int y = 10;
         int w = 252;
         int h = 50;
-        drawGlass(g, x, y, w, h, 6, withFade(0x62313A46, alpha), withFade(BORDER, alpha));
+        drawGlass(g, x, y, w, h, 0, withFade(0x62313A46, alpha), withFade(BORDER, alpha));
         g.blit(RenderPipelines.GUI_TEXTURED, MARK, x + 7, y + 8, 0.0F, 0.0F, 34, 34, 64, 64, 64, 64);
         g.text(font, "What's The BEST Minecraft Client in 2026?", x + 48, y + 13, withFade(TEXT, alpha), true);
         g.text(font, "Nexus Client", x + 48, y + 29, withFade(TEXT_DIM, alpha), false);
@@ -143,7 +143,7 @@ public class MainMenuScreen extends TitleScreen {
     private void drawIconButton(GuiGraphicsExtractor g, int x, int y, int index, float hover, float alpha) {
         int fill = NexusRenderer.lerpColor(GLASS, GLASS_HOVER, hover);
         int border = NexusRenderer.lerpColor(BORDER, BORDER_HOVER, hover);
-        drawGlass(g, x, y, ICON_SIZE, ICON_SIZE, 7, withFade(fill, alpha), withFade(border, alpha));
+        drawGlass(g, x, y, ICON_SIZE, ICON_SIZE, 0, withFade(fill, alpha), withFade(border, alpha));
 
         int color = withFade(TEXT, alpha);
         int cx = x + ICON_SIZE / 2;
@@ -224,11 +224,11 @@ public class MainMenuScreen extends TitleScreen {
     }
 
     private void drawGlass(GuiGraphicsExtractor g, int x, int y, int w, int h, int radius, int fill, int border) {
-        boolean blurred = MenuBackdropBlur.addBlurredRoundRect(g, x, y, w, h, radius);
+        boolean blurred = MenuBackdropBlur.addBlurredRoundRect(g, x, y, w, h, 0);
         int bg = blurred ? fill : NexusRenderer.withAlpha(fill, Math.min(255, ((fill >>> 24) & 0xFF) + 28));
         g.nextStratum();
-        NexusRenderer.fillRoundRect(g, x, y, w, h, radius, border);
-        NexusRenderer.fillRoundRect(g, x + 1, y + 1, Math.max(1, w - 2), Math.max(1, h - 2), Math.max(1, radius - 1), bg);
+        NexusRenderer.fillRoundRect(g, x, y, w, h, 0, border);
+        NexusRenderer.fillRoundRect(g, x + 1, y + 1, Math.max(1, w - 2), Math.max(1, h - 2), 0, bg);
     }
 
     private void drawGearIcon(GuiGraphicsExtractor g, int cx, int cy, int color) {

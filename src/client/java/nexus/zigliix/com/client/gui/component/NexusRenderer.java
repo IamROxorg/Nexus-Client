@@ -10,24 +10,7 @@ public final class NexusRenderer {
         if (w <= 0 || h <= 0) {
             return;
         }
-        int radius = Math.max(0, Math.min(r, Math.min(w, h) / 2));
-        if (radius <= 0) {
-            g.fill(x, y, x + w, y + h, color);
-            return;
-        }
-
-        int radiusSq = radius * radius;
-        for (int row = 0; row < h; row++) {
-            int inset = 0;
-            if (row < radius) {
-                int dy = radius - row;
-                inset = radius - (int) Math.sqrt(Math.max(0, radiusSq - dy * dy));
-            } else if (row >= h - radius) {
-                int dy = row - (h - radius - 1);
-                inset = radius - (int) Math.sqrt(Math.max(0, radiusSq - dy * dy));
-            }
-            g.fill(x + inset, y + row, x + w - inset, y + row + 1, color);
-        }
+        g.fill(x, y, x + w, y + h, color);
     }
 
     /** Draws a 2 px wide vertical accent bar. */
@@ -89,16 +72,10 @@ public final class NexusRenderer {
         if (radius <= 0.0f) {
             return;
         }
-        int minY = (int) Math.floor(cy - radius);
-        int maxY = (int) Math.ceil(cy + radius);
-        float radiusSq = radius * radius;
-        for (int y = minY; y <= maxY; y++) {
-            float dy = y + 0.5f - cy;
-            float dx = (float) Math.sqrt(Math.max(0.0f, radiusSq - dy * dy));
-            int minX = (int) Math.floor(cx - dx);
-            int maxX = (int) Math.ceil(cx + dx);
-            g.fill(minX, y, maxX, y + 1, color);
-        }
+        int x = (int) Math.floor(cx - radius);
+        int y = (int) Math.floor(cy - radius);
+        int size = Math.max(1, (int) Math.ceil(radius * 2.0f));
+        g.fill(x, y, x + size, y + size, color);
     }
 
     public static void fillSmoothRoundRect(GuiGraphicsExtractor g, float x, float y, float w, float h, float radius, int color) {
