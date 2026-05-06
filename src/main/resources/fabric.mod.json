@@ -3,14 +3,11 @@
 	"id": "nexus-client",
 	"version": "${version}",
 	"name": "Nexus Client",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A Fabric utility client with a custom menu, click GUI, HUD modules, and in-game configuration.",
 	"authors": [
-		"Me!"
+		"Zigliix"
 	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
+	"contact": {},
 	"license": "CC0-1.0",
 	"icon": "assets/nexus-client/icon.png",
 	"environment": "*",
@@ -23,7 +20,6 @@
 		]
 	},
 	"mixins": [
-		"nexus-client.mixins.json",
 		{
 			"config": "nexus-client.client.mixins.json",
 			"environment": "client"

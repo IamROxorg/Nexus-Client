@@ -3,8 +3,12 @@
 	"package": "nexus.zigliix.com.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"ExampleClientMixin",
-		"KeyboardMixin"
+		"AbstractClientPlayerMixin",
+		"GuiRendererMixin",
+		"KeyboardMixin",
+		"MouseHandlerMixin",
+		"OptionsMixin",
+		"TitleScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

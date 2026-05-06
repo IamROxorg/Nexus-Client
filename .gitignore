@@ -24,6 +24,11 @@ bin/
 .classpath
 .project
 
+# local/generated
+
+graphify-out/
+*.lnk
+
 # macos
 
 *.DS_Store

@@ -1,8 +1,9 @@
 package nexus.zigliix.com.client.module;
 
 public enum Category {
-    COMBAT("Combat"),
+    HUD("HUD"),
     VISUAL("Visual"),
+    COSMETIC("Cosmetic"),
     MOVEMENT("Movement"),
     MISC("Misc");
 
